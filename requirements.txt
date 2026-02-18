@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+jinja2
+opencv-python
+numpy
+aiofiles
+
+reportlab>=4.0.0
+
+python-dotenv

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Answer Sheet</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap');
+
+    :root {
+      --bg: #f5f0e8;
+      --ink: #1a1a1a;
+      --border: #1a1a1a;
+      --bubble-size: 28px;
+      --row-gap: 10px;
+      --accent: #c0392b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Mono', monospace;
+      color: var(--ink);
+      padding: 30px;
+      min-height: 100vh;
+    }
+
+    .sheet-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #fff;
+      border: 2px solid var(--border);
+      padding: 36px 40px 40px;
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+
+    /* ── Header ── */
+    .sheet-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--ink);
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+      gap: 20px;
+    }
+
+    .sheet-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 0.06em;
+      line-height: 1;
+    }
+
+    .sheet-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-field {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+
+    .meta-line {
+      width: 140px;
+      border-bottom: 1.5px solid var(--ink);
+      height: 18px;
+    }
+
+    /* ── Instructions ── */
+    .instructions {
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
+      line-height: 1.7;
+      opacity: 0.6;
+      margin-bottom: 28px;
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+    }
+
+    /* ── Grid ── */
+    .questions-grid {
+      display: grid;
+      gap: var(--row-gap) 32px;
+    }
+
+    /* ── Single Question Row ── */
+    .q-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .q-num {
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      width: 28px;
+      text-align: right;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .bubbles {
+      display: flex;
+      gap: 7px;
+    }
+
+    .bubble {
+      width: var(--bubble-size);
+      height: var(--bubble-size);
+      border-radius: 50%;
+      border: 2px solid var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+      position: relative;
+    }
+
+    .bubble:hover {
+      background: #eee;
+    }
+
+    .bubble.filled {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    /* ── Footer ── */
+    .sheet-footer {
+      margin-top: 32px;
+      border-top: 2px solid var(--ink);
+      padding-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      opacity: 0.45;
+    }
+
+    /* ── Print styles ── */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .sheet-wrapper { box-shadow: none; border: 1px solid #000; }
+      .bubble { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .bubble.filled { background: #000 !important; color: #fff !important; }
+    }
+
+    /* ── Responsive columns ── */
+    @media (min-width: 560px) {
+      .questions-grid { grid-template-columns: repeat(var(--cols, 2), 1fr); }
+    }
+    @media (max-width: 559px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sheet-wrapper" id="sheet">
+
+  <!-- Header -->
+  <div class="sheet-header">
+    <div class="sheet-title">Answer<br>Sheet</div>
+    <div class="sheet-meta">
+      <div class="meta-field"><span class="meta-label">Name</span><div class="meta-line"></div></div>
+      <div class="meta-field"><span class="meta-label">Date</span><div class="meta-line"></div></div>
+      <div class="meta-field"><span class="meta-label">Score</span><div class="meta-line"></div></div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <p class="instructions">
+    Use a dark pen or pencil. Fill the bubble completely for your chosen answer.<br>
+    To change an answer, cross out the old bubble and fill the correct one.
+  </p>
+
+  <!-- Questions will be injected here -->
+  <div class="questions-grid" id="questionsGrid"></div>
+
+  <!-- Footer -->
+  <div class="sheet-footer">
+    <span id="footerTotal"></span>
+    <span>© Answer Sheet Template</span>
+  </div>
+
+</div>
+
+<script>
+  // ─────────────────────────────────────────
+  //  CONFIGURATION — change these values
+  // ─────────────────────────────────────────
+  const TOTAL_QUESTIONS = 50;   // ← set your question count here
+  const OPTIONS         = ['A','B','C','D','E']; // ← choices per question
+  const COLUMNS         = 2;    // ← grid columns (1, 2, 3, or 4)
+  // ─────────────────────────────────────────
+
+  (function render() {
+    const grid = document.getElementById('questionsGrid');
+    const footer = document.getElementById('footerTotal');
+
+    // Adjust bubble size based on question count
+    const bubbleSize = TOTAL_QUESTIONS <= 20 ? 32
+                     : TOTAL_QUESTIONS <= 50 ? 28
+                     : TOTAL_QUESTIONS <= 80 ? 24
+                     : 20;
+
+    const rowGap     = TOTAL_QUESTIONS <= 30 ? 13
+                     : TOTAL_QUESTIONS <= 60 ? 10
+                     : 8;
+
+    document.documentElement.style.setProperty('--bubble-size', bubbleSize + 'px');
+    document.documentElement.style.setProperty('--row-gap', rowGap + 'px');
+    document.documentElement.style.setProperty('--cols', COLUMNS);
+
+    // Build rows
+    for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+      const row = document.createElement('div');
+      row.className = 'q-row';
+      row.innerHTML = `<span class="q-num">${i}</span><div class="bubbles" data-q="${i}"></div>`;
+      const bubblesDiv = row.querySelector('.bubbles');
+
+      OPTIONS.forEach(opt => {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        b.textContent = opt;
+        b.dataset.opt = opt;
+        b.addEventListener('click', () => selectBubble(b, bubblesDiv));
+        bubblesDiv.appendChild(b);
+      });
+
+      grid.appendChild(row);
+    }
+
+    footer.textContent = `Total Questions: ${TOTAL_QUESTIONS}`;
+  })();
+
+  function selectBubble(bubble, container) {
+    container.querySelectorAll('.bubble').forEach(b => b.classList.remove('filled'));
+    bubble.classList.toggle('filled');
+  }
+</script>
+
+</body>
+</html>
