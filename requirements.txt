@@ -1,11 +1,11 @@
+# Core dependencies
 fastapi
 uvicorn[standard]
 python-multipart
-jinja2
-opencv-python
-numpy
-aiofiles
 
 reportlab>=4.0.0
+opencv-python>=4.5.0
+numpy>=1.19.0
+pdf2image>=1.16.0
+pillow>=8.0.0
 
-python-dotenv

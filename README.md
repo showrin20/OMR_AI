@@ -83,6 +83,21 @@ GET /answer-key/{exam_id}                  # Get answer key
 POST /answer-key/{exam_id}                 # Set answer key
 ```
 
+### OMR Sheet Scanning
+```
+POST /scan-omr                             # Scan and detect answers from filled OMR sheet
+    Parameters:
+      - file: Image or PDF file (JPEG, PNG, or PDF)
+      - expected_options: Number of options per question (2-6, default 4)
+    Returns:
+      {
+        "status": "success",
+        "total_questions": 50,
+        "detected_answers": {"1": "A", "2": "B", ...},
+        "detected_bubbles": 50
+      }
+```
+
 ### System
 ```
 GET /health                                # Health check
@@ -182,6 +197,45 @@ Visit: http://localhost:8000
   "unmarked": 0,
   "detected_answers": {...}
 }
+```
+
+## 📸 Scanning Filled OMR Sheets
+
+### Web Interface
+1. Visit: http://localhost:8000
+2. Scroll to "Scan & Detect Answers" section
+3. Upload a scanned/photographed filled OMR sheet
+4. Select number of options per question
+5. Click "Scan & Detect Answers"
+
+### API Usage
+```bash
+curl -X POST http://localhost:8000/scan-omr \
+  -F "file=@filled_omr.jpg" \
+  -F "expected_options=4"
+```
+
+### Response Format
+```json
+{
+  "status": "success",
+  "total_questions": 50,
+  "detected_answers": {
+    "1": "A",
+    "2": "B",
+    "3": "C",
+    ...
+  },
+  "detected_bubbles": 50
+}
+```
+
+### Output Format
+The detected answers are in format: `Question.Answer`
+```
+1.A  2.B  3.A  4.D  5.C
+6.B  7.A  8.D  9.C  10.B
+...
 ```
 
 ## 🔍 Advanced Features
